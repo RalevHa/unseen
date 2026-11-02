@@ -150,13 +150,21 @@
   }
 
   // Facebook assigns window.__d itself; intercept the assignment
+  // ponytail: if __d is already locked (non-configurable) or this script ran twice, we can't
+  // intercept; log it and bail instead of throwing. Reload the tab to retry.
   let current = window.__d;
-  Object.defineProperty(window, "__d", {
-    configurable: true,
-    get: () => current,
-    set: (v) => {
-      current = typeof v === "function" ? wrapDefine(v) : v;
-    },
-  });
+  if (current && current.__unseenWrapped) return log("skip: __d already hooked");
+  try {
+    Object.defineProperty(window, "__d", {
+      configurable: true,
+      get: () => current,
+      set: (v) => {
+        current = typeof v === "function" ? wrapDefine(v) : v;
+        if (typeof current === "function") current.__unseenWrapped = true;
+      },
+    });
+  } catch (e) {
+    return log("failed: cannot hook __d (locked):", e.message);
+  }
   if (typeof current === "function") current = wrapDefine(current);
 })();
