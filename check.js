@@ -3,6 +3,8 @@ const assert = require("assert");
 globalThis.window = globalThis;
 const handlers = [];
 globalThis.addEventListener = (type, fn) => handlers.push(fn);
+const events = [];
+globalThis.dispatchEvent = (e) => events.push(e);
 const setCfg = (c) => handlers.forEach((f) => f({ detail: JSON.stringify(c) }));
 require("./hook.js");
 
@@ -47,4 +49,11 @@ assert.strictEqual(calls[1][1][2], true, "typing value untouched when switched o
 const cb = modules.useMAWMarkThreadAsRead.default();
 assert.ok(typeof cb === "function");
 setCfg({ read: true, typing: true });
+// status reported to the popup: every patched module "ok", last event holds the full map
+const st = JSON.parse(events[events.length - 1].detail);
+for (const n of ["LSOptimisticMarkThreadReadV2", "LSOptimisticMarkThreadReadV2StoredProcedure", "useMAWMarkThreadAsRead", "LSSendTypingIndicator", "MAWSecureTypingState", "StoriesSuspenseBucketContainer.react"])
+  assert.strictEqual(st[n], "ok", "status ok: " + n);
+// a module whose source no longer matches reports "fail"
+__d("MAWSecureTypingState", [], function () {});
+assert.strictEqual(JSON.parse(events[events.length - 1].detail).MAWSecureTypingState, "fail", "no-match reported as fail");
 console.log("ok");
