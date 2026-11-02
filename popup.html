@@ -126,6 +126,10 @@
   input[type="checkbox"]:checked::after { transform: translateX(16px); }
   input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+  .st { flex: none; min-width: 16px; text-align: center; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .st.ok { color: #1a9d55; }
+  .st.fail { color: #d93838; }
+
   .note { margin: 12px 2px 0; font-size: 12px; line-height: 1.45; color: var(--muted); }
 
   @media (prefers-reduced-motion: reduce) {
@@ -154,6 +158,7 @@
       <label class="row">
         <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 13l4 4L14 8"/><path d="M10 15.5l1.5 1.5L21 8"/></svg></span>
         <span class="txt"><b>ซ่อน "Seen"</b><small>คนอื่นไม่เห็นว่าคุณอ่านแล้ว</small></span>
+        <span class="st" id="st-read"></span>
         <input type="checkbox" id="read" role="switch">
       </label>
     </li>
@@ -161,6 +166,7 @@
       <label class="row">
         <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="6"/><circle cx="8" cy="12" r="0.9" fill="currentColor"/><circle cx="12" cy="12" r="0.9" fill="currentColor"/><circle cx="16" cy="12" r="0.9" fill="currentColor"/></svg></span>
         <span class="txt"><b>ซ่อน "Typing..."</b><small>ไม่แสดงว่าคุณกำลังพิมพ์</small></span>
+        <span class="st" id="st-typing"></span>
         <input type="checkbox" id="typing" role="switch">
       </label>
     </li>
@@ -168,6 +174,7 @@
       <label class="row">
         <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke-dasharray="3.2 2.4"/><circle cx="12" cy="12" r="3.2"/></svg></span>
         <span class="txt"><b>ดู Story แบบไม่ขึ้นชื่อ</b><small>ชื่อคุณไม่อยู่ในรายชื่อคนดู</small></span>
+        <span class="st" id="st-stories"></span>
         <input type="checkbox" id="stories" role="switch">
       </label>
     </li>

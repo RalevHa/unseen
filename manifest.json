@@ -25,9 +25,8 @@
         "https://web.facebook.com/*",
         "https://www.messenger.com/*"
       ],
-      "js": ["hook.js"],
-      "run_at": "document_start",
-      "world": "MAIN"
+      "js": ["bridge.js"],
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -35,8 +34,9 @@
         "https://web.facebook.com/*",
         "https://www.messenger.com/*"
       ],
-      "js": ["bridge.js"],
-      "run_at": "document_start"
+      "js": ["hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ]
 }

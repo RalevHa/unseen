@@ -11,6 +11,15 @@
     console.debug("[unseen]", ...a);
   };
 
+  // per-module result ("ok" | "fail"), relayed to the popup by bridge.js so a silent miss is visible
+  const status = (window.__unseenStatus = {});
+  const report = (name, ok) => {
+    status[name] = ok ? "ok" : "fail";
+    try {
+      dispatchEvent(new CustomEvent("unseen-status", { detail: JSON.stringify(status) }));
+    } catch (e) {}
+  };
+
   // switches from the popup (relayed by bridge.js); everything on until the first message arrives
   const cfg = (window.__unseenCfg = { read: true, typing: true, stories: true });
   window.addEventListener("unseen-config", (e) => {
@@ -93,9 +102,11 @@
     const after = SOURCE[name](before);
     if (after === before) {
       log("no match", name);
+      report(name, false);
       return factory;
     }
     log("source patched", name);
+    report(name, true);
     // factories only use their params and globals, so rebuilding in global scope is safe
     return compile(after);
   }
@@ -133,8 +144,10 @@
                   try {
                     AFTER[name](a);
                     log("patched", name);
+                    report(name, true);
                   } catch (e) {
                     log("no match", name, e.message);
+                    report(name, false);
                   }
                   return result;
                 },
@@ -142,6 +155,7 @@
             }
           } catch (e) {
             log("failed", name, e);
+            report(name, false);
           }
         }
         return Reflect.apply(target, self, args);
@@ -164,6 +178,7 @@
       },
     });
   } catch (e) {
+    report("__d", false);
     return log("failed: cannot hook __d (locked):", e.message);
   }
   if (typeof current === "function") current = wrapDefine(current);
